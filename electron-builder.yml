@@ -20,20 +20,20 @@ win:
 mac:
   icon: assets/icon.icns
   category: public.app-category.productivity
+  artifactName: VOIDMIND-${version}-mac.${ext}
   target:
     - target: dmg
     - target: zip
-  artifactName: VOIDMIND-${version}-mac.dmg
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: build/entitlements.mac.plist
 
 linux:
   icon: assets/icon.png
+  artifactName: VOIDMIND-${version}.${ext}
   target:
     - target: AppImage
     - target: deb
-  artifactName: VOIDMIND-${version}.AppImage
 
 nsis:
   oneClick: false
