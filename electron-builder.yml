@@ -31,6 +31,7 @@ mac:
 linux:
   icon: assets/icon.png
   artifactName: VOIDMIND-${version}.${ext}
+  maintainer: VOIDMIND <voidmind@users.noreply.github.com>
   target:
     - target: AppImage
     - target: deb

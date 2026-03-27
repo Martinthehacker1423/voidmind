@@ -1,6 +1,6 @@
 {
   "name": "voidmind",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Your private AI space",
   "main": "electron/main.js",
   "type": "module",
