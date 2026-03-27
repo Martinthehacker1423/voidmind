@@ -1,0 +1,106 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--void-0);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+/* Allow text selection in chat and inputs */
+.selectable, .msg-content, textarea, input[type="text"], input[type="password"] {
+  user-select: text;
+}
+
+a { color: var(--p-400); text-decoration: none; }
+a:hover { color: var(--p-300); text-decoration: underline; }
+
+button { cursor: pointer; font-family: var(--font-body); }
+input, textarea { font-family: var(--font-body); }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: var(--r-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--border-3); }
+
+/* Code blocks */
+pre {
+  background: var(--void-1);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  overflow-x: auto;
+  margin: var(--sp-3) 0;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-code);
+}
+
+pre code {
+  color: var(--text-1);
+  background: none;
+  padding: 0;
+}
+
+/* Inline code */
+p code, li code {
+  background: var(--void-4);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  font-size: 0.9em;
+}
+
+/* Markdown content */
+.msg-content p { margin-bottom: var(--sp-3); }
+.msg-content p:last-child { margin-bottom: 0; }
+.msg-content ul, .msg-content ol { padding-left: var(--sp-5); margin-bottom: var(--sp-3); }
+.msg-content li { margin-bottom: var(--sp-1); }
+.msg-content h1, .msg-content h2, .msg-content h3 {
+  font-family: var(--font-display);
+  color: var(--text-accent);
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+.msg-content h1 { font-size: var(--text-xl); }
+.msg-content h2 { font-size: var(--text-lg); }
+.msg-content h3 { font-size: var(--text-md); }
+.msg-content blockquote {
+  border-left: 3px solid var(--p-600);
+  padding-left: var(--sp-4);
+  color: var(--text-2);
+  margin: var(--sp-3) 0;
+}
+.msg-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--sp-3) 0;
+}
+.msg-content th, .msg-content td {
+  border: 1px solid var(--border-2);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+.msg-content th { background: var(--void-4); color: var(--text-accent); }
+.msg-content hr {
+  border: none;
+  border-top: 1px solid var(--border-2);
+  margin: var(--sp-4) 0;
+}
+.msg-content strong { color: var(--text-1); font-weight: 600; }
+.msg-content em { color: var(--text-2); }

@@ -1,0 +1,49 @@
+appId: com.voidmind.desktop
+productName: VOIDMIND
+copyright: VOIDMIND
+
+files:
+  - dist/**/*
+  - electron/**/*
+
+extraResources:
+  - from: assets/
+    to: assets/
+
+win:
+  icon: assets/icon.ico
+  target:
+    - target: nsis
+      arch: [x64, arm64]
+  artifactName: VOIDMIND-Setup-${version}.exe
+
+mac:
+  icon: assets/icon.icns
+  category: public.app-category.productivity
+  target:
+    - target: dmg
+    - target: zip
+  artifactName: VOIDMIND-${version}-mac.dmg
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+
+linux:
+  icon: assets/icon.png
+  target:
+    - target: AppImage
+    - target: deb
+  artifactName: VOIDMIND-${version}.AppImage
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: VOIDMIND
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+
+publish:
+  provider: github
+  releaseType: release

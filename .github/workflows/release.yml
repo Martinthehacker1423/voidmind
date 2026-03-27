@@ -1,0 +1,155 @@
+name: Build & Release
+
+# 触发条件：推送 v* 格式的 tag，如 v1.0.1
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # ── macOS 构建 ──────────────────────────────────────────
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate icons
+        run: npm run gen-icons
+
+      - name: Build & Package (macOS)
+        run: npm run build:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 没有 Apple 证书时跳过签名
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-build
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          retention-days: 5
+
+  # ── Windows 构建 ─────────────────────────────────────────
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate icons
+        run: npm run gen-icons
+
+      - name: Build & Package (Windows)
+        run: npm run build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-build
+          path: dist/*.exe
+          retention-days: 5
+
+  # ── Linux 构建 ───────────────────────────────────────────
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux build deps
+        run: sudo apt-get install -y rpm
+
+      - name: Generate icons
+        run: npm run gen-icons
+
+      - name: Build & Package (Linux)
+        run: npm run build:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+          retention-days: 5
+
+  # ── 创建 GitHub Release ───────────────────────────────────
+  release:
+    needs: [build-mac, build-win, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-files
+          merge-multiple: true
+
+      - name: List release files
+        run: ls -lh release-files/
+
+      - name: Read version from package.json
+        id: pkg
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "VOIDMIND v${{ steps.pkg.outputs.version }}"
+          body: |
+            ## VOIDMIND v${{ steps.pkg.outputs.version }}
+
+            ### 下载
+            | 平台 | 文件 |
+            |------|------|
+            | macOS | `VOIDMIND-*.dmg` |
+            | Windows | `VOIDMIND-Setup-*.exe` |
+            | Linux | `VOIDMIND-*.AppImage` |
+
+            ### 安装说明
+            - **macOS**：下载 `.dmg`，双击安装。首次打开若提示「无法验证」，右键 → 打开 即可。
+            - **Windows**：下载 `.exe`，运行安装包。SmartScreen 拦截时点「更多信息」→「仍要运行」。
+            - **Linux**：下载 `.AppImage`，`chmod +x` 后运行。
+
+            ### 使用前提
+            需要自备 [Claude API Key](https://console.anthropic.com)（首次充值 $5 起）。
+
+          files: release-files/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
